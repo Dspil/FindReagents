@@ -1,0 +1,19 @@
+* FindReagents addon for WoW
+
+Given a selected tradeskill, this addon can be commanded to list the base materials needed to craft it, or craft a recipy given the materials exist.
+
+* Usage
+
+The listing of the items for a selected recipe is requested with:
+
+#+BEGIN_SRC shell
+	/fr [<number>]
+#+END_SRC
+
+where <number> is the number of items you want to make. It is optional, with default value of 1.
+
+If these base items are present, they can be combined to make a desired amount of items of the selected tradeskill with:
+
+#+BEGIN_SRC shell
+	/fr make <number>
+#+END_SRC
