@@ -10,9 +10,9 @@ The listing of the items for a selected recipe is requested with:
 	/fr [<number>]
 #+END_SRC
 
-where <number> is the number of items you want to make. It is optional, with default value of 1.
+where <number> is the quantity of the item for which you need the ingredients. It is optional, with default value of 1.
 
-If these base items are present, they can be combined to make a desired amount of items of the selected tradeskill with:
+If these ingredients are present in your inventory, they can be combined to make a desired amount of the item selected with:
 
 #+BEGIN_SRC shell
 	/fr make <number>
