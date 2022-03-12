@@ -1,6 +1,6 @@
 * FindReagents addon for WoW
 
-Given a selected tradeskill, this addon can be commanded to list the base materials needed to craft it, or craft a recipy given the materials exist.
+Given a selected tradeskill, this addon can be commanded to list the base materials needed to craft it, or craft a recipe given the materials exist.
 
 * Usage
 
