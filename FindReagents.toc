@@ -1,0 +1,7 @@
+## Interface: 30305
+## Author: Stoptrolling, Seftalia
+## Title: FindReagents
+## Notes: Find base reagents for a recipe
+## Version: 1.0
+FindReagents.xml
+FindReagents.lua
