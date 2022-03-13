@@ -20,19 +20,22 @@ end
 
 function FindReagents_Handler(msg)
    if msg == "" then
-      r = FindReagents_GetTradeskillReagents(1)
+      local r = FindReagents_GetTradeskillReagents(1)
       FindReagents_PrintResults(r[1])
       return nil
    end
    local _, _, cmd, args = string.find(msg, "%s?(%w+)%s?(.*)")
    local num = tonumber(cmd)
    if num then 
-      r = FindReagents_GetTradeskillReagents(num)
+      local r = FindReagents_GetTradeskillReagents(num)
       FindReagents_PrintResults(r[1])
    else
       if cmd == "make" then
-	 r = FindReagents_GetTradeskillReagents(tonumber(args))
+	 local r = FindReagents_GetTradeskillReagents(tonumber(args))
 	 FindReagents_makeParts(r)
+      elseif cmd == "buy" then
+	 local r = FindReagents_GetTradeskillReagents(tonumber(args))
+	 FindReagents_buyParts(r[1])
       end
    end
 end
@@ -138,6 +141,34 @@ function FindReagents_makeParts1by1(partsTable, index, itemName, amount)
    end
 end
    
+-- buying logic
+
+function FindReagents_buyItem(itemName, amount)
+   BrowseName:SetText(itemName)
+   buycheap_amount:SetNumber(amount)
+   BuyCheap()
+end
+
+function FindReagents_buyParts(parts)
+   local partsTable = {}
+   for i, v in pairs(parts) do
+      tinsert(partsTable, {i, v})
+   end
+   FindReagents_buyItem(partsTable[1][1], partsTable[1][2])
+   FindReagents_wait(1, FindReagents_buyItemWait, partsTable, 2)
+end
+
+function FindReagents_buyItemWait(partsTable, index)
+   if not partsTable[index] then
+      return nil
+   end
+   if not BuyCheap_running then
+      FindReagents_buyItem(partsTable[index][1], partsTable[index][2])
+      FindReagents_wait(1, FindReagents_buyItemWait, partsTable, index + 1)
+   else
+      FindReagents_wait(1, FindReagents_buyItemWait, partsTable, index)
+   end
+end
 
 -- wait function below
 
