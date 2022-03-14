@@ -1,13 +1,14 @@
 function FindReagents_OnLoad()
    SLASH_FINDREAGENTS1 = "/fr"
    SlashCmdList["FINDREAGENTS"] = FindReagents_Handler
+
    StaticPopupDialogs["FINDREAGENTS_CRAFT"] = {
       text = "Craft %s?",
       button1 = "Ok",
       button2 = "Cancel",
       timeout = 0,
       OnShow = function(self, itemName)
-	 return nil
+	 PlaySound("RaidWarning", "master")
       end,
       OnAccept = function()
 	 DoTradeSkill(FindReagents_recipe[1], FindReagents_recipe[2])
@@ -15,8 +16,26 @@ function FindReagents_OnLoad()
       end,
       preferredIndex = 3,
    }
+   FindReagents_TradeSkillOpen = false
+   FindReagents_MerchantOpen = false
+   FindReagents_AuctionHouseOpen = false
 end
 
+function FindReagents_EventHandler(self, event, arg1)
+   if event == "MERCHANT_SHOW" then
+      FindReagents_MerchantOpen = true
+   elseif event == "MERCHANT_CLOSED" then
+      FindReagents_MerchantOpen = false
+   elseif event == "TRADE_SKILL_SHOW" then
+      FindReagents_TradeSkillOpen = true
+   elseif event == "TRADE_SKILL_CLOSE" then
+         FindReagents_TradeSkillOpen = false
+   elseif event == "AUCTION_HOUSE_SHOW" then
+      FindReagents_AuctionHouseOpen = true
+   elseif event == "AUCTION_HOUSE_CLOSED" then
+      FindReagents_AuctionHouseOpen = false
+   end
+end
 
 function FindReagents_Handler(msg)
    if msg == "" then
@@ -143,19 +162,40 @@ end
    
 -- buying logic
 
+function FindReagents_buyParts(parts)
+   if FindReagents_MerchantOpen then
+      FindReagents_BuyFromMerchant(parts)
+   elseif FindReagents_AuctionHouseOpen then
+      FindReagents_BuyFromAuctionHouse(parts)
+   else
+      DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000[FindReagents]|r Neither a Merchant or an Auction House are open!")
+   end
+end
+
+function FindReagents_BuyFromMerchant(parts)
+   for i=1,GetMerchantNumItems() do
+      local name, texture, price, quantity, numAvailable, isUsable, extendedCost = GetMerchantItemInfo(i)
+      if parts[name] then
+	 BuyMerchantItem(i, parts[name])
+      end
+   end
+end
+
+function FindReagents_BuyFromAuctionHouse(parts)
+   local partsTable = {}
+   for i, v in pairs(parts) do
+      if v > 0 then
+	 tinsert(partsTable, {i, v})
+      end
+   end
+   FindReagents_buyItem(partsTable[1][1], partsTable[1][2])
+   FindReagents_wait(1, FindReagents_buyItemWait, partsTable, 2)
+end
+
 function FindReagents_buyItem(itemName, amount)
    BrowseName:SetText(itemName)
    buycheap_amount:SetNumber(amount)
    BuyCheap()
-end
-
-function FindReagents_buyParts(parts)
-   local partsTable = {}
-   for i, v in pairs(parts) do
-      tinsert(partsTable, {i, v})
-   end
-   FindReagents_buyItem(partsTable[1][1], partsTable[1][2])
-   FindReagents_wait(1, FindReagents_buyItemWait, partsTable, 2)
 end
 
 function FindReagents_buyItemWait(partsTable, index)

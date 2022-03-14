@@ -8,7 +8,14 @@
     <Scripts> 
         <OnLoad> 
 					FindReagents_OnLoad()
+					self:RegisterEvent("MERCHANT_SHOW");
+					self:RegisterEvent("MERCHANT_CLOSED");
+					self:RegisterEvent("TRADE_SKILL_SHOW");
+					self:RegisterEvent("TRADE_SKILL_CLOSE");
+					self:RegisterEvent("AUCTION_HOUSE_SHOW");
+					self:RegisterEvent("AUCTION_HOUSE_CLOSED");
         </OnLoad>
+				<OnEvent function="FindReagents_EventHandler"/>
     </Scripts>
 </Frame>
 </Ui>
