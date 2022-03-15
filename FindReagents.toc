@@ -3,5 +3,6 @@
 ## Title: FindReagents
 ## Notes: Find base reagents for a recipe
 ## Version: 1.0
+## SavedVariablesPerCharacter: FindReagents_BaseReagents
 FindReagents.xml
 FindReagents.lua

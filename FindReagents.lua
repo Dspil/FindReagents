@@ -22,7 +22,11 @@ function FindReagents_OnLoad()
 end
 
 function FindReagents_EventHandler(self, event, arg1)
-   if event == "MERCHANT_SHOW" then
+   if event == "ADDON_LOADED" and arg1 == "FindReagents" then
+      if FindReagents_BaseReagents == nil then
+	 FindReagents_BaseReagents = {};
+      end
+   elseif event == "MERCHANT_SHOW" then
       FindReagents_MerchantOpen = true
    elseif event == "MERCHANT_CLOSED" then
       FindReagents_MerchantOpen = false
@@ -55,8 +59,33 @@ function FindReagents_Handler(msg)
       elseif cmd == "buy" then
 	 local r = FindReagents_GetTradeskillReagents(tonumber(args))
 	 FindReagents_buyParts(r[1])
+      elseif cmd == "base" then
+	 if FindReagents_BaseReagents[args] then
+	    FindReagents_BaseReagents[args] = nil
+	 else
+	    FindReagents_BaseReagents[args] = true
+	 end
+      elseif cmd == "list" then
+	 DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000[FindReagents]|r List of base reagents:")
+	 for i, v in pairs(FindReagents_BaseReagents) do
+	    if v then
+	       DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000-> |r" .. i)
+	    end
+	 end
+      else
+	 FindReagents_PrintUsage()
       end
    end
+end
+
+function FindReagents_PrintUsage()
+   DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000[FindReagents]|r Usage:")
+   DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000/fr|r: Find reagents for performing the selected recipe one time.")
+   DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000/fr <number>|r: Find reagents for performing the selected recipe <number> times.")
+   DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000/fr make <number>|r: Make <number> items of the selected recipe.")
+   DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000/fr buy <number>|r: Buy items from merchant or auction house for <number> copies of the recipy.")
+   DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000/fr base <reagent>|r: Add or remove a reagent to be considered as a base reagent.")
+   DEFAULT_CHAT_FRAME:AddMessage("|cffFF8000/fr list|r: List all reagents that should be considered base reagents.")
 end
 
 function FindReagents_PrintResults(r)
@@ -89,7 +118,7 @@ function FindReagents_GetTradeskillReagents1(tradeSkillRecipeId, count, haveUsed
 	 trueReagentCount = max(count * reagentCount - playerReagentCount, 0)
 	 haveUsed[reagentName] = count * reagentCount - trueReagentCount
       end
-      if reagentId == -1 then
+      if reagentId == -1 or FindReagents_BaseReagents[reagentName] then
 	 if not nonCraftableReagents[reagentName] then
 	    nonCraftableReagents[reagentName] = trueReagentCount
 	 else

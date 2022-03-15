@@ -8,6 +8,7 @@
     <Scripts> 
         <OnLoad> 
 					FindReagents_OnLoad()
+					self:RegisterEvent("ADDON_LOADED");
 					self:RegisterEvent("MERCHANT_SHOW");
 					self:RegisterEvent("MERCHANT_CLOSED");
 					self:RegisterEvent("TRADE_SKILL_SHOW");
